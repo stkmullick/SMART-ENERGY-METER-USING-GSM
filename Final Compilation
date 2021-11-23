@@ -1,0 +1,53 @@
+const int pulse=7;
+float watt=0.0,price=0,unit=0;
+int pinState=0;
+unsigned int i=0,j=0;
+unsigned long interval=30000;   /*for delay of 1hr*/
+unsigned long previousMillis=0;
+
+
+void setup(){
+  pinMode(pulse,INPUT);
+  Serial.begin(9600);/*set baud rate*/
+}
+void loop()
+{
+  unsigned long currentMillis=millis();
+  pinState=digitalRead(pulse);
+  if(pinState==HIGH)
+  {
+    i++;
+    delay(100);
+  }
+  if(currentMillis-previousMillis>=interval)/*to check whether 1hr has passed*/
+{
+  j=1;
+ previousMillis=currentMillis;
+}
+if(j==1)
+{
+  watt=(i*0.3125);
+  unit=watt/100+1.406250;
+  price=unit*5;
+  Serial.begin(9600);
+  Serial.print("\r");
+  delay(800);
+  Serial.println("AT+CMGF=1");
+  delay(800);
+  Serial.println("AT+CMGS=\"+919382007960\"\r");
+  delay(800);
+  Serial.println("Unit");
+  delay(800);
+  Serial.println(unit,6);
+  delay(800);
+  Serial.println("Price");
+  delay(100);
+  Serial.print(price,6);
+  delay(100);
+  Serial.print("Rs");
+  delay(10);
+  Serial.write(0x1A);
+  delay(100);
+  j=0;
+}
+}
